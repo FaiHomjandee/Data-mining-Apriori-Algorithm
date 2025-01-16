@@ -7,7 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/1-QZTLMqOezYTLg0tKNhqHmRtipjSbNnF
 """
 
+"""
+# You have to !pip this line before call the functions #
 !pip install torch torchvision torchaudio --quiet
+"""
 import torch
 import torch.nn as nn
 import torch.optim as optim
