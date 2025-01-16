@@ -29,11 +29,16 @@
     {
       "cell_type": "code",
       "source": [
+        "\"\"\"\n",
+        "# Import all of thse before call them\n",
+        "\n",
         "!pip install torch torchvision torchaudio --quiet\n",
         "import torch\n",
         "import torch.nn as nn\n",
         "import torch.optim as optim\n",
-        "from torchvision import datasets, transforms"
+        "from torchvision import datasets, transforms\n",
+        "\n",
+        "\"\"\""
       ],
       "metadata": {
         "id": "VLQxokXybMsx"
