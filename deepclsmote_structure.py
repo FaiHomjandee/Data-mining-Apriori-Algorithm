@@ -64,7 +64,7 @@ class Encoder(nn.Module):
             nn.ReLU(True), # Added layer for 256x256
         )
         # final layer is fully connected
-        self.fc = nn.Linear(self.dim_h * (2 ** 4) * (args.img_size // (2 ** 5)) * (args.img_size // (2 ** 5)), self.n_z) 
+        self.fc = nn.Linear(self.dim_h * (2 ** 4) * (self.img_size // (2 ** 5)) * (self.img_size // (2 ** 5)), self.n_z) 
 
     def forward(self, x, labsn):
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
