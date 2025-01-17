@@ -40,37 +40,30 @@ args['num_class'] = 2
 class Encoder(nn.Module):
     def __init__(self, args):
         super(Encoder, self).__init__()
+        self.args = args
 
-        self.n_channel = args['n_channel']
-        self.dim_h = args['dim_h']
-        self.n_z = args['n_z']
-        self.img_size = args['img_size']
-
-        # convolutional filters, work excellent with image data
+        # Convolutional layers
         self.conv = nn.Sequential(
-            nn.Conv2d(self.n_channel, self.dim_h, 4, 2, 1, bias=False),
+            nn.Conv2d(args['n_channel'], args['dim_h'], 4, 2, 1, bias=False),  # Input: 256x256, Output: 128x128
+            nn.BatchNorm2d(args['dim_h']),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(self.dim_h, self.dim_h * 2, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(self.dim_h * 2),
+            nn.Conv2d(args['dim_h'], args['dim_h'] * 2, 4, 2, 1, bias=False),  # Input: 128x128, Output: 64x64
+            nn.BatchNorm2d(args['dim_h'] * 2),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(self.dim_h * 2, self.dim_h * 4, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(self.dim_h * 4),
+            nn.Conv2d(args['dim_h'] * 2, args['dim_h'] * 4, 4, 2, 1, bias=False),  # Input: 64x64, Output: 32x32
+            nn.BatchNorm2d(args['dim_h'] * 4),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(self.dim_h * 4, self.dim_h * 8, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(self.dim_h * 8), 
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(self.dim_h * 8, self.dim_h * 16, 4, 2, 1, bias=False), # Added layer for 256x256
-            nn.BatchNorm2d(self.dim_h * 16), # Added layer for 256x256
-            nn.ReLU(True), # Added layer for 256x256
+            nn.Conv2d(args['dim_h'] * 4, args['dim_h'] * 8, 4, 2, 1, bias=False),  # Input: 32x32, Output: 16x16
+            nn.BatchNorm2d(args['dim_h'] * 8),
+            nn.LeakyReLU(0.2, inplace=True), 
         )
-        # final layer is fully connected
+
+        # Linear layers
         self.fc = nn.Sequential(
-            # Assuming img_size = 256
-            # Adjust input_size if img_size is different
-            nn.Linear(self.dim_h * 8 * (self.img_size // 16) ** 2, self.n_z),  # calculate input_size dynamically
-            nn.ReLU(True)
-            # ... rest of the linear layers
+            nn.Linear(args['dim_h'] * 8 * 16 * 16, args['dim_h'] * 8) # input: flattened output from conv layers
         )
+        self.fc21 = nn.Linear(args['dim_h'] * 8, args['n_z']) # output: latent space (n_z)
+
 
     def forward(self, x, labsn):
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
