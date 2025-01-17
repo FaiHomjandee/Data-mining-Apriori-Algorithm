@@ -44,22 +44,33 @@ class Encoder(nn.Module):
 
         # Convolutional layers
         self.conv = nn.Sequential(
-            nn.Conv2d(args['n_channel'], args['dim_h'], 4, 2, 1, bias=False),  # Input: 256x256, Output: 128x128
-            nn.BatchNorm2d(args['dim_h']),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(args['dim_h'], args['dim_h'] * 2, 4, 2, 1, bias=False),  # Input: 128x128, Output: 64x64
-            nn.BatchNorm2d(args['dim_h'] * 2),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(args['dim_h'] * 2, args['dim_h'] * 4, 4, 2, 1, bias=False),  # Input: 64x64, Output: 32x32
-            nn.BatchNorm2d(args['dim_h'] * 4),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(args['dim_h'] * 4, args['dim_h'] * 8, 4, 2, 1, bias=False),  # Input: 32x32, Output: 16x16
-            nn.BatchNorm2d(args['dim_h'] * 8),
-            nn.LeakyReLU(0.2, inplace=True), 
+            nn.Conv2d(3, 16, kernel_size=4, stride=2, padding=1), # output dimension: 128 X 128 X 16
+           # Each Kernal Size : 4 X 4 X 3
+           """ 16 Kernel used in the 1st Convolutional layer so the output will be 128 X 128 X 16 """
+           nn.LeakyReLU(0.2, inplace=True),
+            
+           # Each Kernal Size : 4 X 4 X 16
+           nn.Conv2d(16, 128, kernel_size=4, stride=2, padding=1), # 64 X 64 X 128
+           nn.LeakyReLU(0.2, inplace=True),
+            
+           # Each Kernal Size : 4 X 4 X 128
+           nn.Conv2d(128, 256, kernel_size=4, stride=2, padding=1), # 32 X 32 X 256
+           nn.ReLU(),
+        
+           nn.Conv2d(256, 512, kernel_size=4, stride=2, padding=1), # Output : 16 X 16 X 512
+           # Each Kernal Size : 4 X 4 X 256 
+           """ 4 X 4 X 256 = 4096 .When you use a kernel size of 4x4x256 in a convolutional 
+           neural network, what happens is that for each location in the input volume, 
+           there will be 4096 point-wise multiplications between the corresponding 
+           values in the input volume and the kernel. These multiplications are then 
+           added together to produce a single scalar value. This process occurs for 
+           every location in the input volume, effectively transforming it into an output 
+           volume with reduced spatial dimensions (16 X 16) """
+           nn.LeakyReLU(0.2, inplace=True)
         )
 
         # Linear layers to project to latent space
-        self.fc = nn.Linear(args['dim_h'] * 8 * 16 * 16, args['n_z'])  # Output: latent space (n_z)
+        self.fc = nn.Linear(512*16*16,)  # Output: latent space (n_z)
 
 
     def forward(self, x, labsn):
