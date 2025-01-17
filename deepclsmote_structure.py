@@ -60,7 +60,7 @@ class Encoder(nn.Module):
 
         # Linear layers
         self.fc = nn.Sequential(
-            nn.Linear(args['dim_h'] * 8 * 16 * 16, args['dim_h'] * 8) # input: flattened output from conv layers
+            nn.Linear(args['img_size'] * args['img_size'] * args['n_channel'], args['dim_h']),
         )
         self.fc21 = nn.Linear(args['dim_h'] * 8, args['n_z']) # output: latent space (n_z)
 
