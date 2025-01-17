@@ -15,6 +15,7 @@ t3 = time.time()
 """args for AE"""
 
 args = {}
+args['img_size'] = 256
 args['dim_h'] = 64         # factor controlling size of hidden layers
 args['n_channel'] = 1#3    # number of channels in the input data
 
