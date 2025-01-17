@@ -58,16 +58,14 @@ class Encoder(nn.Module):
             nn.LeakyReLU(0.2, inplace=True), 
         )
 
-        # Linear layers
-        self.fc = nn.Sequential(
-            nn.Linear(args['img_size'] * args['img_size'] * args['n_channel'], args['dim_h']),
-        )
-        self.fc21 = nn.Linear(args['dim_h'] * 8, args['n_z']) # output: latent space (n_z)
+        # Linear layers to project to latent space
+        self.fc = nn.Linear(args['dim_h'] * 8 * 16 * 16, args['n_z'])  # Output: latent space (n_z)
 
 
     def forward(self, x, labsn):
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         x = self.conv(x)
+        
         # Class images Bagging
         num_class_in_sample = np.unique(labsn)
         train_list = [[] for _ in range(args['num_class'])]
@@ -76,23 +74,18 @@ class Encoder(nn.Module):
         for i, label in enumerate(labsn):
           train_list[label].append(torch.tensor(x[i].cpu().detach().numpy()))
 
-        #list_class_latent = []
         for i, label in enumerate(labsn):
-          #print('size each class',np.shape(train_list[k]))
           test = torch.stack(train_list[label])
-
           #Each class
           x0 =  test.squeeze().to(device) # Move x0 to the same device as self.fc
-          #print('x0 aft squeeze ',x0.size())
+          x0 = x0.view(x0.size(0), -1)
           x0_linear = self.fc(x0)
-          #print('x0 output ',x0_linear.size())
           list_class_latent[label] = x0_linear
-
-        #print('list_class_latent',list_class_latent[0].size())
 
         # Mixed Class
 
-        x = x.squeeze()
+       
+        x = x.view(x.size(0), -1) 
         x = self.fc(x)
 
         #sys.exit(1)
