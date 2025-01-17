@@ -65,9 +65,8 @@ class Encoder(nn.Module):
         self.fc = nn.Linear(self.dim_h * (2 ** 4) * (args.image_size // (2 ** 5)) * (args.image_size // (2 ** 5)), self.n_z) 
 
     def forward(self, x, labsn):
-
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
         x = self.conv(x)
-
         # Class images Bagging
         num_class_in_sample = np.unique(labsn)
         train_list = [[] for _ in range(args['num_class'])]
