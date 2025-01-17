@@ -25,6 +25,8 @@ class SimpleCNN(nn.Module):
         self.relu2 = nn.ReLU()
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
         self.flatten = nn.Flatten()
+        
+        # Output size after conv2 and pool2: (64 channels, 64 height, 64 width)
         input_size = 64 * 64 * 64 
 
         self.fc1 = nn.Linear(input_size, 128)
