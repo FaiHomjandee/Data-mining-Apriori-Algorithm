@@ -44,6 +44,7 @@ class Encoder(nn.Module):
         self.n_channel = args['n_channel']
         self.dim_h = args['dim_h']
         self.n_z = args['n_z']
+        self.img_size = args['img_size']
 
         # convolutional filters, work excellent with image data
         self.conv = nn.Sequential(
