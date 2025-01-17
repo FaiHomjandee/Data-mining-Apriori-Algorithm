@@ -47,29 +47,23 @@ class Encoder(nn.Module):
         # convolutional filters, work excellent with image data
         self.conv = nn.Sequential(
             nn.Conv2d(self.n_channel, self.dim_h, 4, 2, 1, bias=False),
-            #nn.ReLU(True),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(self.dim_h, self.dim_h * 2, 4, 2, 1, bias=False),
             nn.BatchNorm2d(self.dim_h * 2),
-            #nn.ReLU(True),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(self.dim_h * 2, self.dim_h * 4, 4, 2, 1, bias=False),
             nn.BatchNorm2d(self.dim_h * 4),
-            #nn.ReLU(True),
             nn.LeakyReLU(0.2, inplace=True),
-
-
             nn.Conv2d(self.dim_h * 4, self.dim_h * 8, 4, 2, 1, bias=False),
-
-            #3d and 32 by 32
-            #nn.Conv2d(self.dim_h * 4, self.dim_h * 8, 4, 1, 0, bias=False),
-
-            nn.BatchNorm2d(self.dim_h * 8), # 40 X 8 = 320
-
-            nn.LeakyReLU(0.2, inplace=True) )#,
-
+            nn.BatchNorm2d(self.dim_h * 8), 
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(self.dim_h * 8, self.dim_h * 16, 4, 2, 1, bias=False), # Added layer for 256x256
+            nn.BatchNorm2d(self.dim_h * 16), # Added layer for 256x256
+            nn.ReLU(True), # Added layer for 256x256
+        )
         # final layer is fully connected
-        self.fc = nn.Linear(self.dim_h * (2 ** 3), self.n_z)
+        self.fc = nn.Linear(self.dim_h * (2 ** 4) * (args.image_size // (2 ** 5)) * (args.image_size // (2 ** 5)), self.n_z) 
+
     def forward(self, x, labsn):
 
         x = self.conv(x)
@@ -121,6 +115,9 @@ class Decoder(nn.Module):
 
         # deconvolutional filters, essentially inverse of convolutional filters
         self.deconv = nn.Sequential(
+            nn.ConvTranspose2d(self.dim_h * 16, self.dim_h * 8, 4, 2, 1, bias=False), # Adjusted layer for 256x256
+            nn.BatchNorm2d(self.dim_h * 8),
+            nn.ReLU(True),
             nn.ConvTranspose2d(self.dim_h * 8, self.dim_h * 4, 4),
             nn.BatchNorm2d(self.dim_h * 4),
             nn.ReLU(True),
