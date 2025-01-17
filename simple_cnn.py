@@ -9,14 +9,15 @@ from torchvision import datasets, transforms
 args = {}
 args['img_size'] = 256
 args['num_classes'] = 2
+args['n_channel'] = 1
 
 class SimpleCNN(nn.Module):
     def __init__(self):
-
-        self.img_size = args['img_size']
-        self.num_classes = args['num_classes']
-
         super(SimpleCNN, self).__init__()
+        img_size = args['img_size']
+        num_classes = args['num_classes']
+        n_channel = args['n_channel']
+        # Define the layers
         self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
         self.relu1 = nn.ReLU()
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
