@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 
+args = {}
 args['img_size'] = 256
 args['num_classes'] = 2
 
